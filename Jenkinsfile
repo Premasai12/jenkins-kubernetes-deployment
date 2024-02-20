@@ -4,11 +4,13 @@ pipeline {
 
   stages {
 
-    stage('Checkout Source') {
-      steps {
-        git 'https://github.com/Premasai12/jenkins-kubernetes-deployment.git'
-      }
-    }
+    stage('Code Checkout')
+		{
+			steps
+			{
+				git 'https://github.com/Premasai12/javaspringboot1.git'
+			}
+		}
 
     stage('Build Docker Image')
 		{
