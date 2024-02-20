@@ -13,13 +13,33 @@ pipeline {
 		}
 
     stage('Build Docker Image')
-		{
+ 		{
 			steps
-			{
-			        sh 'cd /var/lib/jenkins/workspace/$JOB_NAME/'
-			        sh 'cp /var/lib/jenkins/workspace/$JOB_NAME/target/*.jar /var/lib/jenkins/workspace/$JOB_NAME'
-				sh 'docker build -t java-sb:$BUILD_NUMBER .'
-				
+ 			{
+				sh 'cd /var/lib/jenkins/workspace/$JOB_NAME/'
+ 
+				sh 'cp /var/lib/jenkins/workspace/$JOB_NAME/target/addressbook.war /var/lib/jenkins/workspace/$JOB_NAME/'
+ 
+				sh 'docker build -t addressbook:$BUILD_NUMBER .'
+ 
+				sh 'docker tag addressbook:$BUILD_NUMBER psr329/addressbook:$BUILD_NUMBER'
+ 			}
+		}
+		stage('Push Docker Image')
+ 		{
+			steps
+ 			{
+				withDockerRegistry([ credentialsId: "dockerhub", url: "" ])
+ 				{
+					sh 'docker push psr329/addressbook:$BUILD_NUMBER'
+ 				}
+			}
+ 		}
+  		stage('Deploy as container')
+ 		{
+			steps
+ 			{
+				sh 'docker run -itd -P psr329/addressbook:$BUILD_NUMBER'
 			}
 		}
 
